@@ -3,12 +3,14 @@ import Layout from '../layout/Layout';
 import { AppRoutes } from '../enum/AppRoutes';
 import MainPage from '../pages/MainPage';
 import NotFoundPage from '../pages/NotFoundPage';
+import PostPage from '../pages/PostPage';
 
 const AppRouter = () => {
   return (
     <Routes>
       <Route path={AppRoutes.Home} element={<Layout />}>
         <Route index element={<MainPage />} />
+        <Route path={AppRoutes.Post} element={<PostPage />} />
         <Route path={AppRoutes.NotFoundPage} element={<NotFoundPage />} />
       </Route>
     </Routes>
