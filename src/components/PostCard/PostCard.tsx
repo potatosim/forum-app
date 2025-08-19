@@ -9,6 +9,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import type { IPostWithFavorites } from '../../types/data-contracts';
 import PostCardActions from './PostCardActions';
+import { useCurrentUser } from '../../providers/AuthProvider/hooks';
 
 interface PostCardProps {
   post: IPostWithFavorites;
@@ -18,6 +19,8 @@ const PostCard = ({
   post: { title, body, userId, id, isFavorite },
 }: PostCardProps) => {
   const navigate = useNavigate();
+
+  const currentUser = useCurrentUser();
 
   return (
     <Card
@@ -29,7 +32,11 @@ const PostCard = ({
           <Avatar sx={{ bgcolor: '#30c3e7' }} aria-label="user">
             {userId}
           </Avatar>
-        }></CardHeader>
+        }
+        action={
+          currentUser && currentUser.role === 'admin' && <div>delete</div>
+        }
+      />
       <CardContent>
         <Typography>{body}</Typography>
       </CardContent>

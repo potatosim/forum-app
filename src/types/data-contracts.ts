@@ -40,3 +40,35 @@ export interface GetAllCommentsResponse extends GetAllResponse {
 export interface IPostWithFavorites extends IPostDto {
   isFavorite: boolean;
 }
+
+export interface IUserDto {
+  id: number;
+  firstName: string;
+  lastName: string;
+  role: 'admin' | 'user';
+}
+
+export interface ILoginUserDto {
+  username: string;
+  password: string;
+  expiresInMins?: number;
+}
+
+export interface ILoginUserResponse {
+  id: number;
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  gender: string;
+  image: string;
+  accessToken: string;
+  refreshToken: string;
+}
+
+// STORAGE REACTIONS
+// {
+//   [userId]: {
+//     [postId]: 'like' | 'dislike' | 'none'
+//   }
+// }

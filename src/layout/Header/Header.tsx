@@ -21,7 +21,7 @@ const Header = () => {
         aria-label="home"
         onClick={() => navigate(AppRoutes.Home)}
         size="large">
-        <OtherHouses color="secondary" />
+        <OtherHouses color="action" />
       </IconButton>
     </StyledHeader>
   );
