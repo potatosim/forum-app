@@ -21,7 +21,7 @@ const AuthProvider = () => {
         navigate(AppRoutes.Login);
       },
     });
-  });
+  }, []);
 
   if (isLoading && !user) {
     return <CircularProgress />;

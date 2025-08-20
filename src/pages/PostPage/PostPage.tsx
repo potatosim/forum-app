@@ -8,14 +8,16 @@ import type {
   GetAllCommentsResponse,
   ICommentDto,
   IPostDto,
-  IPostWithFavorites,
+  IPostWithAdditionalData,
 } from '../../types/data-contracts';
-import { getFavoritesPostsFromStorage } from '../../helpers/getFavoritesPostsFromStorage';
 import CommentTextArea from '../../components/Comment/CommentTextArea';
+import { getPostWithAdditionalData } from '../../helpers/getPostsWithAdditionalData';
+import { useCurrentUser } from '../../providers/AuthProvider/hooks';
 
 const PostPage = () => {
+  const currentUser = useCurrentUser();
   const { id } = useParams();
-  const [post, setPost] = useState<IPostWithFavorites | null>(null);
+  const [post, setPost] = useState<IPostWithAdditionalData | null>(null);
   const [comments, setComments] = useState<ICommentDto[]>([]);
   const [postsError, setPostsError] = useState('');
   const [commentsError, setCommentsError] = useState('');
@@ -27,9 +29,7 @@ const PostPage = () => {
           `https://dummyjson.com/posts/${id}`
         );
 
-        const favorites = getFavoritesPostsFromStorage();
-
-        setPost({ ...data, isFavorite: favorites.includes(data.id) });
+        setPost(getPostWithAdditionalData(data, currentUser));
       } catch (err) {
         setPostsError((err as Error).message);
       }
@@ -48,7 +48,7 @@ const PostPage = () => {
       }
     };
     getCommentsByPostId();
-  }, [id]);
+  }, []);
 
   console.log({ comments });
 

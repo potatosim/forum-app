@@ -40,7 +40,7 @@ const LoginForm = () => {
       sx={{
         p: 4,
         height: '40vh',
-        width: '20%',
+        minWidth: '20%',
       }}
       elevation={12}>
       <Box

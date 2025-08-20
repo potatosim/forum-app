@@ -37,8 +37,9 @@ export interface GetAllCommentsResponse extends GetAllResponse {
   comments: ICommentDto[];
 }
 
-export interface IPostWithFavorites extends IPostDto {
+export interface IPostWithAdditionalData extends IPostDto {
   isFavorite: boolean;
+  reaction: 'like' | 'dislike' | null;
 }
 
 export interface IUserDto {
@@ -65,10 +66,11 @@ export interface ILoginUserResponse {
   accessToken: string;
   refreshToken: string;
 }
-
-// STORAGE REACTIONS
-// {
-//   [userId]: {
-//     [postId]: 'like' | 'dislike' | 'none'
-//   }
-// }
+export interface ILocalStorageReactions {
+  [userId: string]: {
+    [postId: string]: {
+      reaction: 'like' | 'dislike' | null;
+      isFavorite: boolean;
+    };
+  };
+}

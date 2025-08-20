@@ -4,12 +4,14 @@ import axios from 'axios';
 import PostCard from '../../components/PostCard';
 import type {
   GetAllPostsResponse,
-  IPostWithFavorites,
+  IPostWithAdditionalData,
 } from '../../types/data-contracts';
-import { getFavoritesPostsFromStorage } from '../../helpers/getFavoritesPostsFromStorage';
+import { getPostsWithAdditionalData } from '../../helpers/getPostsWithAdditionalData';
+import { useCurrentUser } from '../../providers/AuthProvider/hooks';
 
 const MainPage = () => {
-  const [posts, setPosts] = useState<IPostWithFavorites[]>([]);
+  const currentUser = useCurrentUser();
+  const [posts, setPosts] = useState<IPostWithAdditionalData[]>([]);
 
   useEffect(() => {
     const getPosts = async () => {
@@ -18,14 +20,7 @@ const MainPage = () => {
           'https://dummyjson.com/posts'
         );
 
-        const favoritesPosts = getFavoritesPostsFromStorage();
-
-        setPosts(
-          data.posts.map((post) => ({
-            ...post,
-            isFavorite: favoritesPosts.includes(post.id),
-          }))
-        );
+        setPosts(getPostsWithAdditionalData(data.posts, currentUser));
       } catch (err) {
         console.log((err as Error).message);
       }
