@@ -1,31 +1,25 @@
-import { Paper } from '@mui/material';
+import { Alert, Paper } from '@mui/material';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import PostCard from '../../components/PostCard';
-import type {
-  GetAllPostsResponse,
-  IPostWithAdditionalData,
-} from '../../types/data-contracts';
+import type { IPostWithAdditionalData } from '../../types/data-contracts';
 import { getPostsWithAdditionalData } from '../../helpers/getPostsWithAdditionalData';
-import { useCurrentUser } from '../../providers/AuthProvider/hooks';
+import { getPosts } from '../../services/getPosts.query';
+import { useAuthContext } from '../../providers/AuthProvider/hooks';
 
 const MainPage = () => {
-  const currentUser = useCurrentUser();
+  const { user } = useAuthContext();
   const [posts, setPosts] = useState<IPostWithAdditionalData[]>([]);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const getPosts = async () => {
-      try {
-        const { data } = await axios.get<GetAllPostsResponse>(
-          'https://dummyjson.com/posts'
-        );
-
-        setPosts(getPostsWithAdditionalData(data.posts, currentUser));
-      } catch (err) {
-        console.log((err as Error).message);
-      }
-    };
-    getPosts();
+    getPosts({
+      onSuccess: (posts) => {
+        setPosts(getPostsWithAdditionalData(posts, user));
+      },
+      onError: (error) => {
+        setError(error.message);
+      },
+    });
   }, []);
 
   return (
@@ -44,6 +38,7 @@ const MainPage = () => {
       {posts.map((post) => (
         <PostCard key={`${post.id}${post.title}`} post={post} />
       ))}
+      {error && <Alert severity="error">{error}</Alert>}
     </Paper>
   );
 };

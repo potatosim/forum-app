@@ -1,8 +1,8 @@
 import { useContext } from 'react';
 import { AuthContext } from './config';
 
-export const useCurrentUser = () => {
-  const { user } = useContext(AuthContext);
+export const useAuthContext = () => {
+  const authContext = useContext(AuthContext);
 
-  return user;
+  return authContext;
 };

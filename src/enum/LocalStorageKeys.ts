@@ -1,5 +1,6 @@
 export enum LocalStorageKeys {
   Favorites = 'favorites',
-  Comments = 'Comments',
-  Reactions = 'Reactions',
+  Comments = 'comments',
+  Reactions = 'reactions',
+  AccessToken = 'accessToken',
 }

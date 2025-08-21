@@ -7,8 +7,8 @@ import {
 import { Box, CardActions, IconButton, Tooltip } from '@mui/material';
 import { useState, type MouseEventHandler } from 'react';
 import { changeFavorites, changeReaction } from '../../helpers/storage';
-import { useCurrentUser } from '../../providers/AuthProvider/hooks';
 import type { IPostWithAdditionalData } from '../../types/data-contracts';
+import { useAuthContext } from '../../providers/AuthProvider/hooks';
 
 const PostCardActions = ({
   isFavorite,
@@ -19,13 +19,13 @@ const PostCardActions = ({
   IPostWithAdditionalData,
   'id' | 'isFavorite' | 'reaction' | 'reactions'
 >) => {
-  const currentUser = useCurrentUser();
+  const { user } = useAuthContext();
   const [isPostFavorite, setIsPostFavorite] = useState(isFavorite);
   const [currentUserReaction, setCurrentUserReaction] = useState(reaction);
 
   const addToFavorites: MouseEventHandler = (event) => {
     event.stopPropagation();
-    changeFavorites(id, currentUser?.id as number, true);
+    changeFavorites(id, user?.id as number, true);
 
     setIsPostFavorite(true);
   };
@@ -33,7 +33,7 @@ const PostCardActions = ({
   const removeFromFavs: MouseEventHandler = (event) => {
     event.stopPropagation();
 
-    changeFavorites(id, currentUser?.id as number, false);
+    changeFavorites(id, user?.id as number, false);
 
     setIsPostFavorite(false);
   };
@@ -44,7 +44,7 @@ const PostCardActions = ({
     const updatedReaction =
       currentUserReaction && currentUserReaction === 'like' ? null : 'like';
 
-    changeReaction(id, currentUser?.id as number, updatedReaction);
+    changeReaction(id, user?.id as number, updatedReaction);
     setCurrentUserReaction(updatedReaction);
   };
 
@@ -56,7 +56,7 @@ const PostCardActions = ({
         ? null
         : 'dislike';
 
-    changeReaction(id, currentUser?.id as number, updatedReaction);
+    changeReaction(id, user?.id as number, updatedReaction);
     setCurrentUserReaction(updatedReaction);
   };
 

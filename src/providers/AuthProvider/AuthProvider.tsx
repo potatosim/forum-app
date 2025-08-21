@@ -1,34 +1,15 @@
-import { useEffect, useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
-import { getCurrentUser } from '../../services/getCurrentUser.query';
-import { AppRoutes } from '../../enum/AppRoutes';
-import { CircularProgress } from '@mui/material';
+import { useMemo, useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import type { IUserDto } from '../../types/data-contracts';
 import { AuthContext } from './config';
 
 const AuthProvider = () => {
-  const navigate = useNavigate();
   const [user, setUser] = useState<IUserDto | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    getCurrentUser({
-      onSuccess: (currentUser) => {
-        setUser(currentUser);
-        setIsLoading(false);
-      },
-      onError: () => {
-        navigate(AppRoutes.Login);
-      },
-    });
-  }, []);
-
-  if (isLoading && !user) {
-    return <CircularProgress />;
-  }
+  const memoizedContextValue = useMemo(() => ({ user, setUser }), [user]);
 
   return (
-    <AuthContext value={{ user }}>
+    <AuthContext value={memoizedContextValue}>
       <Outlet />
     </AuthContext>
   );

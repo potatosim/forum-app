@@ -1,13 +1,34 @@
 import { Send } from '@mui/icons-material';
 import { Box, IconButton, TextareaAutosize, Tooltip } from '@mui/material';
 import { useState } from 'react';
+import { updateComments } from '../../helpers/storage';
+import type { ICommentDto, IUserDto } from '../../types/data-contracts';
+import { useAuthContext } from '../../providers/AuthProvider/hooks';
 
-const CommentTextArea = () => {
+const CommentTextArea = ({
+  postId,
+  lastCommentId,
+  setComments,
+}: {
+  postId: number;
+  lastCommentId: number;
+  setComments: (comments: ICommentDto[]) => void;
+}) => {
+  const { user } = useAuthContext();
+
   const [text, setText] = useState('');
 
   const handleComment = () => {
+    const updatedComments = updateComments(
+      text,
+      postId,
+      lastCommentId + 1,
+      user as IUserDto
+    );
+    setComments(updatedComments);
     setText('');
   };
+
   return (
     <Box display="flex" alignItems="center" columnGap="1rem">
       <TextareaAutosize

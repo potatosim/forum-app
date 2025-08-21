@@ -1,5 +1,9 @@
 import { LocalStorageKeys } from '../enum/LocalStorageKeys';
-import type { ILocalStorageReactions } from '../types/data-contracts';
+import type {
+  ICommentDto,
+  ILocalStorageReactions,
+  IUserDto,
+} from '../types/data-contracts';
 
 export const getReactionsFromStorage = (): ILocalStorageReactions => {
   const reactions = localStorage.getItem(LocalStorageKeys.Reactions);
@@ -53,4 +57,43 @@ export const changeReaction = (
     LocalStorageKeys.Reactions,
     JSON.stringify(updatedReactions)
   );
+};
+
+export const getCommentsFromStorage = () => {
+  const comments = localStorage.getItem(LocalStorageKeys.Comments);
+
+  const parsedComments = comments
+    ? (JSON.parse(comments) as ICommentDto[])
+    : [];
+
+  return parsedComments;
+};
+
+export const updateComments = (
+  text: string,
+  postId: number,
+  id: number,
+  currentUser: IUserDto
+) => {
+  const comments = getCommentsFromStorage();
+  const updatedComments = [
+    ...comments,
+    {
+      body: text,
+      likes: 0,
+      postId,
+      id,
+      user: {
+        fullName: `${currentUser?.firstName} ${currentUser?.lastName}`,
+        username: currentUser?.firstName,
+        id: currentUser?.id,
+      },
+    } as ICommentDto,
+  ];
+  localStorage.setItem(
+    LocalStorageKeys.Comments,
+    JSON.stringify(updatedComments)
+  );
+
+  return updatedComments;
 };

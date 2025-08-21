@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PostCardActions from './PostCardActions';
-import { useCurrentUser } from '../../providers/AuthProvider/hooks';
+import { useAuthContext } from '../../providers/AuthProvider/hooks';
 import type { IPostWithAdditionalData } from '../../types/data-contracts';
 
 interface PostCardProps {
@@ -19,7 +19,7 @@ const PostCard = ({
 }: PostCardProps) => {
   const navigate = useNavigate();
 
-  const currentUser = useCurrentUser();
+  const { user } = useAuthContext();
 
   return (
     <Card
@@ -32,9 +32,7 @@ const PostCard = ({
             {userId}
           </Avatar>
         }
-        action={
-          currentUser && currentUser.role === 'admin' && <div>delete</div>
-        }
+        action={user && user.role === 'admin' && <div>delete</div>}
       />
       <CardContent>
         <Typography>{body}</Typography>

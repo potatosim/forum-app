@@ -1,6 +1,7 @@
 import type { AxiosError } from 'axios';
 import type { IUserDto } from '../types/data-contracts';
 import axios from 'axios';
+import { LocalStorageKeys } from '../enum/LocalStorageKeys';
 
 export const getCurrentUser = async ({
   onSuccess,
@@ -10,7 +11,7 @@ export const getCurrentUser = async ({
   onError: (error: AxiosError) => void;
 }) => {
   try {
-    const accessToken = localStorage.getItem('accessToken');
+    const accessToken = localStorage.getItem(LocalStorageKeys.AccessToken);
 
     const { data } = await axios.get<IUserDto>(
       'https://dummyjson.com/user/me',

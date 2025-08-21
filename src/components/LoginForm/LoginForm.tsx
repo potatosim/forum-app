@@ -11,6 +11,7 @@ import { loginUser } from '../../services/loginUser.mutation';
 import { useNavigate } from 'react-router-dom';
 import { AppRoutes } from '../../enum/AppRoutes';
 import { useState } from 'react';
+import { LocalStorageKeys } from '../../enum/LocalStorageKeys';
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const LoginForm = () => {
       },
       {
         onSuccess: ({ accessToken }) => {
-          localStorage.setItem('accessToken', accessToken);
+          localStorage.setItem(LocalStorageKeys.AccessToken, accessToken);
           navigate(AppRoutes.Home);
         },
         onError: (error) => {

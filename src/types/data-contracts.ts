@@ -47,6 +47,7 @@ export interface IUserDto {
   firstName: string;
   lastName: string;
   role: 'admin' | 'user';
+  image: string;
 }
 
 export interface ILoginUserDto {

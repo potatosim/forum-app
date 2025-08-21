@@ -3,6 +3,8 @@ import { AppRoutes } from '../../enum/AppRoutes';
 import { useNavigate } from 'react-router-dom';
 import { IconButton } from '@mui/material';
 import { OtherHouses } from '@mui/icons-material';
+import UserMenu from '../../components/UserMenu';
+import { useAuthContext } from '../../providers/AuthProvider/hooks';
 
 const StyledHeader = styled.header`
   display: flex;
@@ -13,6 +15,7 @@ const StyledHeader = styled.header`
 `;
 
 const Header = () => {
+  const { user } = useAuthContext();
   const navigate = useNavigate();
 
   return (
@@ -23,6 +26,7 @@ const Header = () => {
         size="large">
         <OtherHouses color="action" />
       </IconButton>
+      {user && <UserMenu />}
     </StyledHeader>
   );
 };
