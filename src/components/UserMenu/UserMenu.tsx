@@ -18,6 +18,7 @@ const UserMenu = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
+
   const handleClick: MouseEventHandler<HTMLElement> = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -30,6 +31,10 @@ const UserMenu = () => {
     setAnchorEl(null);
     localStorage.removeItem(LocalStorageKeys.AccessToken);
     navigate(AppRoutes.Login);
+  };
+
+  const handleProfile = () => {
+    navigate(AppRoutes.Profile);
   };
 
   return (
@@ -87,7 +92,7 @@ const UserMenu = () => {
         }}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleProfile}>
           <Avatar /> Profile
         </MenuItem>
         <Divider />

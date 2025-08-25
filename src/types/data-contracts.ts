@@ -48,6 +48,16 @@ export interface IUserDto {
   lastName: string;
   role: 'admin' | 'user';
   image: string;
+  email: string;
+  birthDate: string;
+  address: {
+    address: string;
+    city: string;
+    state: string;
+    stateCode: string;
+    postalCode: string;
+    country: string;
+  };
 }
 
 export interface ILoginUserDto {

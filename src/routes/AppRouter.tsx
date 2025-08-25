@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { getCurrentUser } from '../services/getCurrentUser.query';
 import { CircularProgress } from '@mui/material';
 import { useAuthContext } from '../providers/AuthProvider/hooks';
+import ProfilePage from '../pages/ProfilePage';
 
 const AuthRequired = () => {
   const navigate = useNavigate();
@@ -41,10 +42,11 @@ const AppRouter = () => {
       <Route element={<AuthProvider />}>
         <Route path={AppRoutes.Home} element={<Layout />}>
           <Route path={AppRoutes.Login} element={<LoginPage />} />
+          <Route path={AppRoutes.NotFoundPage} element={<NotFoundPage />} />
           <Route element={<AuthRequired />}>
             <Route index element={<MainPage />} />
             <Route path={AppRoutes.Post} element={<PostPage />} />
-            <Route path={AppRoutes.NotFoundPage} element={<NotFoundPage />} />
+            <Route path={AppRoutes.Profile} element={<ProfilePage />} />
           </Route>
         </Route>
       </Route>

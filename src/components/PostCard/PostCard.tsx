@@ -5,7 +5,7 @@ import {
   CardHeader,
   Typography,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import PostCardActions from './PostCardActions';
 import { useAuthContext } from '../../providers/AuthProvider/hooks';
 import type { IPostWithAdditionalData } from '../../types/data-contracts';
@@ -18,13 +18,23 @@ const PostCard = ({
   post: { title, body, userId, id, isFavorite, reactions, reaction },
 }: PostCardProps) => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const isSeparatePost = pathname.includes('post');
 
   const { user } = useAuthContext();
 
   return (
     <Card
-      sx={{ width: '100%', borderRadius: '0.5rem', cursor: 'pointer' }}
-      onClick={() => navigate(`/post/${id}`)}>
+      sx={{
+        width: '100%',
+        borderRadius: '0.5rem',
+        cursor: isSeparatePost ? 'auto' : 'pointer',
+      }}
+      onClick={() => {
+        if (!isSeparatePost) {
+          navigate(`/post/${id}`);
+        }
+      }}>
       <CardHeader
         title={title}
         avatar={
