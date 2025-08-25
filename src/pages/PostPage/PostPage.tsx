@@ -1,6 +1,6 @@
 import { Alert, CircularProgress, Paper } from '@mui/material';
 import PostCard from '../../components/PostCard';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Comment from '../../components/Comment';
 import type {
@@ -9,12 +9,17 @@ import type {
 } from '../../types/data-contracts';
 import CommentTextArea from '../../components/Comment/CommentTextArea';
 import { getPostWithAdditionalData } from '../../helpers/getPostsWithAdditionalData';
-import { getCommentsFromStorage } from '../../helpers/storage';
+import {
+  getCommentsFromStorage,
+  updateDeletedPosts,
+} from '../../helpers/storage';
 import { getPost } from '../../services/getPost.query';
 import { getCommentsByPostId } from '../../services/getCommentsByPostId.query';
 import { useAuthContext } from '../../providers/AuthProvider/hooks';
+import { AppRoutes } from '../../enum/AppRoutes';
 
 const PostPage = () => {
+  const navigate = useNavigate();
   const { user } = useAuthContext();
   const { id } = useParams();
   const [post, setPost] = useState<IPostWithAdditionalData | null>(null);
@@ -44,12 +49,16 @@ const PostPage = () => {
           setCommentsError(error.message);
         },
       });
+      setCommentsFromLS(
+        getCommentsFromStorage().filter(({ postId }) => postId === +id)
+      );
     }
-
-    setCommentsFromLS(
-      getCommentsFromStorage().filter(({ postId }) => postId === +id!)
-    );
   }, []);
+
+  const handlePostDelete = (deletedPost: IPostWithAdditionalData) => {
+    updateDeletedPosts(deletedPost.id);
+    navigate(AppRoutes.Home);
+  };
 
   return (
     <Paper
@@ -62,7 +71,11 @@ const PostPage = () => {
         gap: '1.5rem',
         padding: '1.5rem',
       }}>
-      {post ? <PostCard post={post} /> : <CircularProgress />}
+      {post ? (
+        <PostCard post={post} onPostDelete={handlePostDelete} />
+      ) : (
+        <CircularProgress />
+      )}
       <CommentTextArea
         postId={+id!}
         lastCommentId={[...commentsFromBE, ...commentsFromLS].length}

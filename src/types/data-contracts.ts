@@ -33,6 +33,10 @@ export interface GetAllPostsResponse extends GetAllResponse {
   posts: IPostDto[];
 }
 
+export interface GetAllUsersResponse extends GetAllResponse {
+  users: IUserDto[];
+}
+
 export interface GetAllCommentsResponse extends GetAllResponse {
   comments: ICommentDto[];
 }

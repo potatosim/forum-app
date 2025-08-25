@@ -3,15 +3,18 @@ import type {
   IPostWithAdditionalData,
   IUserDto,
 } from '../types/data-contracts';
-import { getReactionsFromStorage } from './storage';
+import { getDeletedPostsFromStorage, getReactionsFromStorage } from './storage';
 
 export const getPostsWithAdditionalData = (
   posts: IPostDto[],
   currentUser: IUserDto | null
 ): IPostWithAdditionalData[] => {
   const reactions = getReactionsFromStorage();
+  const deletedPosts = getDeletedPostsFromStorage();
 
-  return posts.map((post) => {
+  const filteredPosts = posts.filter((post) => !deletedPosts.includes(post.id));
+
+  return filteredPosts.map((post) => {
     const currentUserReactions = currentUser ? reactions[currentUser.id] : {};
 
     return {

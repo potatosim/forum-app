@@ -11,6 +11,22 @@ export const getReactionsFromStorage = (): ILocalStorageReactions => {
   return reactions ? (JSON.parse(reactions) as ILocalStorageReactions) : {};
 };
 
+export const getDeletedPostsFromStorage = (): number[] => {
+  const deletedPosts = localStorage.getItem(LocalStorageKeys.DeletedPosts);
+  return deletedPosts ? JSON.parse(deletedPosts) : [];
+};
+
+export const updateDeletedPosts = (postId: number): void => {
+  const deletedPosts = getDeletedPostsFromStorage();
+
+  const updatedDeletedPosts = [...deletedPosts, postId];
+
+  localStorage.setItem(
+    LocalStorageKeys.DeletedPosts,
+    JSON.stringify(updatedDeletedPosts)
+  );
+};
+
 export const changeFavorites = (
   postId: number,
   userId: number,

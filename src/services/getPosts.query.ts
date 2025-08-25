@@ -5,16 +5,15 @@ export const getPosts = async ({
   onSuccess,
   onError,
 }: {
-  onSuccess: (posts: GetAllPostsResponse['posts']) => void;
+  onSuccess: (posts: GetAllPostsResponse) => void;
   onError: (error: AxiosError) => void;
 }) => {
   try {
     const { data } = await axios.get<GetAllPostsResponse>(
-      'https://dummyjson.com/posts'
+      `https://dummyjson.com/posts?limit=999`
     );
 
-    onSuccess(data.posts);
-
+    onSuccess(data);
     return data.posts;
   } catch (err) {
     onError(err as AxiosError);
