@@ -10,7 +10,8 @@ import type {
 import CommentTextArea from '../../components/Comment/CommentTextArea';
 import { getPostWithAdditionalData } from '../../helpers/getPostsWithAdditionalData';
 import {
-  getCommentsFromStorage,
+  getCommentsByPostIdFromStorage,
+  getCreatedPostFromStorage,
   updateDeletedPosts,
 } from '../../helpers/storage';
 import { getPost } from '../../services/getPost.query';
@@ -23,13 +24,20 @@ const PostPage = () => {
   const { user } = useAuthContext();
   const { id } = useParams();
   const [post, setPost] = useState<IPostWithAdditionalData | null>(null);
-  const [commentsFromBE, setCommentsFromBE] = useState<ICommentDto[]>([]);
-  const [commentsFromLS, setCommentsFromLS] = useState<ICommentDto[]>([]);
+  const [comments, setComments] = useState<ICommentDto[]>([]);
   const [postsError, setPostsError] = useState('');
   const [commentsError, setCommentsError] = useState('');
 
   useEffect(() => {
     if (id) {
+      const postFromStorage = getCreatedPostFromStorage(+id);
+
+      if (postFromStorage) {
+        setPost(postFromStorage);
+        setComments(getCommentsByPostIdFromStorage(postFromStorage.id));
+        return;
+      }
+
       getPost({
         id,
         onSuccess: (post) => {
@@ -43,21 +51,22 @@ const PostPage = () => {
       getCommentsByPostId({
         id,
         onSuccess: (comments) => {
-          setCommentsFromBE(comments);
+          setComments(comments);
         },
         onError: (error) => {
           setCommentsError(error.message);
         },
       });
-      setCommentsFromLS(
-        getCommentsFromStorage().filter(({ postId }) => postId === +id)
-      );
     }
   }, []);
 
   const handlePostDelete = (deletedPost: IPostWithAdditionalData) => {
     updateDeletedPosts(deletedPost.id);
     navigate(AppRoutes.Home);
+  };
+
+  const handleAddComment = (comment: ICommentDto) => {
+    setComments((prev) => [...prev, comment]);
   };
 
   return (
@@ -72,16 +81,14 @@ const PostPage = () => {
         padding: '1.5rem',
       }}>
       {post ? (
-        <PostCard post={post} onPostDelete={handlePostDelete} />
+        <>
+          <PostCard post={post} onPostDelete={handlePostDelete} />
+          <CommentTextArea postId={post.id} onSubmit={handleAddComment} />
+        </>
       ) : (
         <CircularProgress />
       )}
-      <CommentTextArea
-        postId={+id!}
-        lastCommentId={[...commentsFromBE, ...commentsFromLS].length}
-        setComments={setCommentsFromLS}
-      />
-      {[...commentsFromBE, ...commentsFromLS].map((comment) => (
+      {comments.map((comment) => (
         <Comment comment={comment} key={`${comment.postId}${comment.id}`} />
       ))}
       {postsError && (

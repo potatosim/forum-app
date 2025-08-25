@@ -1,4 +1,4 @@
-import { Alert, Paper } from '@mui/material';
+import { Alert, Box, Button, Paper } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import PostCard from '../../components/PostCard';
 import type { IPostWithAdditionalData } from '../../types/data-contracts';
@@ -45,6 +45,10 @@ const MainPage = () => {
     navigate(AppRoutes.Post.replace(':id', `${post.id}`));
   };
 
+  const handleAddNewPost = () => {
+    navigate(AppRoutes.CreatePost);
+  };
+
   return (
     <Paper
       elevation={6}
@@ -55,13 +59,23 @@ const MainPage = () => {
         flexDirection: 'column',
         gap: '1.5rem',
         justifyContent: 'flex-start',
-        alignItems: 'flex-end',
+        alignItems: 'flex-start',
         padding: '1.5rem',
       }}>
-      <UsersFilter
-        selectedUser={selectedUserId}
-        setSelectedUser={setSelectedUserId}
-      />
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          width: '100%',
+        }}>
+        <UsersFilter
+          selectedUser={selectedUserId}
+          setSelectedUser={setSelectedUserId}
+        />
+        <Button onClick={handleAddNewPost} color="warning">
+          Add new post
+        </Button>
+      </Box>
       {postsToRender.map((post) => (
         <PostCard
           key={`${post.id}${post.title}`}

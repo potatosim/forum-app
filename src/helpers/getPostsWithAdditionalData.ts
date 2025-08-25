@@ -3,16 +3,23 @@ import type {
   IPostWithAdditionalData,
   IUserDto,
 } from '../types/data-contracts';
-import { getDeletedPostsFromStorage, getReactionsFromStorage } from './storage';
+import {
+  getCreatedPostsFromStorage,
+  getDeletedPostsFromStorage,
+  getReactionsFromStorage,
+} from './storage';
 
 export const getPostsWithAdditionalData = (
   posts: IPostDto[],
   currentUser: IUserDto | null
 ): IPostWithAdditionalData[] => {
   const reactions = getReactionsFromStorage();
+  const createdPosts = getCreatedPostsFromStorage().reverse();
   const deletedPosts = getDeletedPostsFromStorage();
 
-  const filteredPosts = posts.filter((post) => !deletedPosts.includes(post.id));
+  const filteredPosts = [...createdPosts, ...posts].filter(
+    (post) => !deletedPosts.includes(post.id)
+  );
 
   return filteredPosts.map((post) => {
     const currentUserReactions = currentUser ? reactions[currentUser.id] : {};

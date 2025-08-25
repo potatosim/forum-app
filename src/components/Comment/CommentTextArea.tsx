@@ -7,25 +7,18 @@ import { useAuthContext } from '../../providers/AuthProvider/hooks';
 
 const CommentTextArea = ({
   postId,
-  lastCommentId,
-  setComments,
+  onSubmit,
 }: {
   postId: number;
-  lastCommentId: number;
-  setComments: (comments: ICommentDto[]) => void;
+  onSubmit: (comment: ICommentDto) => void;
 }) => {
   const { user } = useAuthContext();
 
   const [text, setText] = useState('');
 
   const handleComment = () => {
-    const updatedComments = updateComments(
-      text,
-      postId,
-      lastCommentId + 1,
-      user as IUserDto
-    );
-    setComments(updatedComments);
+    const comment = updateComments(text, postId, Date.now(), user as IUserDto);
+    onSubmit(comment);
     setText('');
   };
 

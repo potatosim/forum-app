@@ -3,6 +3,7 @@ import type {
   GetAllCommentsResponse,
   ICommentDto,
 } from '../types/data-contracts';
+import { getCommentsByPostIdFromStorage } from '../helpers/storage';
 
 export const getCommentsByPostId = async ({
   id,
@@ -14,11 +15,13 @@ export const getCommentsByPostId = async ({
   onError: (error: AxiosError) => void;
 }) => {
   try {
+    const commentsFromStorage = getCommentsByPostIdFromStorage(+id);
+
     const { data } = await axios.get<GetAllCommentsResponse>(
       `https://dummyjson.com/comments/post/${id}`
     );
 
-    onSuccess(data.comments);
+    onSuccess([...data.comments, ...commentsFromStorage]);
   } catch (err) {
     onError(err as AxiosError);
   }

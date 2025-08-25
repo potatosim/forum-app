@@ -2,6 +2,7 @@ import { LocalStorageKeys } from '../enum/LocalStorageKeys';
 import type {
   ICommentDto,
   ILocalStorageReactions,
+  IPostWithAdditionalData,
   IUserDto,
 } from '../types/data-contracts';
 
@@ -24,6 +25,31 @@ export const updateDeletedPosts = (postId: number): void => {
   localStorage.setItem(
     LocalStorageKeys.DeletedPosts,
     JSON.stringify(updatedDeletedPosts)
+  );
+};
+
+export const getCreatedPostsFromStorage = (): IPostWithAdditionalData[] => {
+  const createdPosts = localStorage.getItem(LocalStorageKeys.CreatedPosts);
+  return createdPosts ? JSON.parse(createdPosts) : [];
+};
+
+export const getCreatedPostFromStorage = (id: number) => {
+  const createdPostId = getCreatedPostsFromStorage();
+  const postFromLocalStorage = createdPostId.find(
+    ({ id: postId }) => postId === +id!
+  );
+
+  return postFromLocalStorage;
+};
+
+export const updatePosts = (post: IPostWithAdditionalData) => {
+  const createdPosts = getCreatedPostsFromStorage();
+
+  const updatedCreatedPosts = [...createdPosts, post];
+
+  localStorage.setItem(
+    LocalStorageKeys.CreatedPosts,
+    JSON.stringify(updatedCreatedPosts)
   );
 };
 
@@ -85,6 +111,12 @@ export const getCommentsFromStorage = () => {
   return parsedComments;
 };
 
+export const getCommentsByPostIdFromStorage = (id: number) => {
+  const comments = getCommentsFromStorage();
+
+  return comments.filter(({ postId }) => postId === id);
+};
+
 export const updateComments = (
   text: string,
   postId: number,
@@ -92,24 +124,25 @@ export const updateComments = (
   currentUser: IUserDto
 ) => {
   const comments = getCommentsFromStorage();
-  const updatedComments = [
-    ...comments,
-    {
-      body: text,
-      likes: 0,
-      postId,
-      id,
-      user: {
-        fullName: `${currentUser?.firstName} ${currentUser?.lastName}`,
-        username: currentUser?.firstName,
-        id: currentUser?.id,
-      },
-    } as ICommentDto,
-  ];
+
+  const comment: ICommentDto = {
+    body: text,
+    likes: 0,
+    postId,
+    id,
+    user: {
+      fullName: `${currentUser?.firstName} ${currentUser?.lastName}`,
+      username: currentUser?.firstName,
+      id: currentUser?.id,
+    },
+  };
+
+  const updatedComments = [...comments, comment];
+
   localStorage.setItem(
     LocalStorageKeys.Comments,
     JSON.stringify(updatedComments)
   );
 
-  return updatedComments;
+  return comment;
 };
