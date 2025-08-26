@@ -11,6 +11,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -18,6 +19,7 @@ import UploadIcon from '@mui/icons-material/Upload';
 import { styled } from '@mui/material/styles';
 import type { IUserDto } from '../../types/data-contracts';
 import { useAuthContext } from '../../providers/AuthProvider/hooks';
+import { AppRoutes } from '../../enum/AppRoutes';
 
 const Input = styled('input')({
   display: 'none',
@@ -71,7 +73,13 @@ const UserProfilePage = () => {
   };
 
   return (
-    <Box display="flex" justifyContent="center" mt={4}>
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        flexDirection: 'column',
+        rowGap: '1.5rem',
+      }}>
       <Card sx={{ maxWidth: 800, width: '100%' }}>
         <CardHeader
           avatar={
@@ -219,6 +227,15 @@ const UserProfilePage = () => {
           </Grid>
         </CardContent>
       </Card>
+      {user?.role === 'admin' && (
+        <Button
+          variant="contained"
+          color="warning"
+          role="link"
+          href={AppRoutes.Admin}>
+          Admin
+        </Button>
+      )}
     </Box>
   );
 };

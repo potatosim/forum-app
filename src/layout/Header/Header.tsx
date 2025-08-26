@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { AppRoutes } from '../../enum/AppRoutes';
 import { useNavigate } from 'react-router-dom';
-import { IconButton } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import { OtherHouses } from '@mui/icons-material';
 import UserMenu from '../../components/UserMenu';
 import { useAuthContext } from '../../providers/AuthProvider/hooks';
@@ -20,12 +20,14 @@ const Header = () => {
 
   return (
     <StyledHeader>
-      <IconButton
-        aria-label="home"
-        onClick={() => navigate(AppRoutes.Home)}
-        size="large">
-        <OtherHouses color="action" />
-      </IconButton>
+      <Tooltip title="Main page">
+        <IconButton
+          aria-label="home"
+          onClick={() => navigate(AppRoutes.Home)}
+          size="large">
+          <OtherHouses color="warning" />
+        </IconButton>
+      </Tooltip>
       {user && <UserMenu />}
     </StyledHeader>
   );

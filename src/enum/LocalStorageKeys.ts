@@ -5,4 +5,5 @@ export enum LocalStorageKeys {
   AccessToken = 'accessToken',
   DeletedPosts = 'deletedPosts',
   CreatedPosts = 'createdPosts',
+  Users = 'users',
 }

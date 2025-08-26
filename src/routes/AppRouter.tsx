@@ -12,6 +12,7 @@ import { CircularProgress } from '@mui/material';
 import { useAuthContext } from '../providers/AuthProvider/hooks';
 import ProfilePage from '../pages/ProfilePage';
 import CreatePostPage from '../pages/CreatePostPage';
+import AdminPage from '../pages/AdminPage';
 
 const AuthRequired = () => {
   const navigate = useNavigate();
@@ -49,6 +50,7 @@ const AppRouter = () => {
             <Route path={AppRoutes.Post} element={<PostPage />} />
             <Route path={AppRoutes.Profile} element={<ProfilePage />} />
             <Route path={AppRoutes.CreatePost} element={<CreatePostPage />} />
+            <Route path={AppRoutes.Admin} element={<AdminPage />} />
           </Route>
         </Route>
       </Route>

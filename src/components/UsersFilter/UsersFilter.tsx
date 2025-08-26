@@ -51,6 +51,7 @@ const UsersFilter = ({
           value={selectedUser ?? ''}
           onChange={handleChange}
           variant="filled"
+          color="warning"
           IconComponent={() =>
             selectedUser && (
               <IconButton onClick={handleClear} size="small">
