@@ -29,7 +29,7 @@ const UserMenu = () => {
   const handleLogout = () => {
     setUser(null);
     setAnchorEl(null);
-    localStorage.removeItem(LocalStorageKeys.AccessToken);
+    localStorage.removeItem(LocalStorageKeys.CurrentUserId);
     navigate(AppRoutes.Login);
   };
 

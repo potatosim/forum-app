@@ -16,8 +16,8 @@ const UsersFilter = ({
   selectedUser,
   setSelectedUser,
 }: {
-  selectedUser: number | null;
-  setSelectedUser: (user: number | null) => void;
+  selectedUser: string | null;
+  setSelectedUser: (user: string | null) => void;
 }) => {
   const [users, setUsers] = useState<IUserDto[]>([]);
   const [error, setError] = useState('');
@@ -33,7 +33,7 @@ const UsersFilter = ({
     });
   }, []);
 
-  const handleChange: SelectProps<number>['onChange'] = (event) => {
+  const handleChange: SelectProps<string>['onChange'] = (event) => {
     setSelectedUser(event.target.value);
   };
 
@@ -60,10 +60,7 @@ const UsersFilter = ({
             )
           }>
           {users.map((user) => (
-            <MenuItem
-              key={user.id}
-              value={user.id}
-              onChange={(e) => console.log({ e })}>
+            <MenuItem key={user.id} value={user.id}>
               {user.firstName} {user.lastName}
             </MenuItem>
           ))}

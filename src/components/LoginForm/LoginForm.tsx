@@ -7,35 +7,22 @@ import {
   Typography,
 } from '@mui/material';
 import PasswordInput from './PasswordInput';
-import { loginUser } from '../../services/loginUser.mutation';
-import { useNavigate } from 'react-router-dom';
-import { AppRoutes } from '../../enum/AppRoutes';
 import { useState } from 'react';
-import { LocalStorageKeys } from '../../enum/LocalStorageKeys';
+import type { ILoginUserDto } from '../../types/data-contracts';
 
-const LoginForm = () => {
-  const navigate = useNavigate();
+interface ILoginFormProps {
+  onSubmit: (data: ILoginUserDto) => void;
+  error: string;
+}
+
+const LoginForm = ({ error, onSubmit }: ILoginFormProps) => {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
 
-  const handleLogin = () => {
-    loginUser(
-      {
-        username,
-        password,
-      },
-      {
-        onSuccess: ({ accessToken }) => {
-          localStorage.setItem(LocalStorageKeys.AccessToken, accessToken);
-          navigate(AppRoutes.Home);
-        },
-        onError: (error) => {
-          setError((error.response?.data as Error).message);
-        },
-      }
-    );
+  const handleSubmit = () => {
+    onSubmit({ username, password });
   };
+
   return (
     <Paper
       sx={{
@@ -61,9 +48,6 @@ const LoginForm = () => {
           placeholder="Login"
           type="text"
           onChange={(e) => {
-            if (error) {
-              setError('');
-            }
             setUserName(e.target.value);
           }}
           value={username}
@@ -73,9 +57,6 @@ const LoginForm = () => {
         <PasswordInput
           value={password}
           setValue={(value) => {
-            if (error) {
-              setError('');
-            }
             setPassword(value);
           }}
           error={!!error}
@@ -84,7 +65,7 @@ const LoginForm = () => {
           fullWidth
           variant="contained"
           color="warning"
-          onClick={handleLogin}>
+          onClick={handleSubmit}>
           Log in
         </Button>
       </Box>

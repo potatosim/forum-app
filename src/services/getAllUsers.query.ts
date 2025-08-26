@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import type { GetAllUsersResponse, IUserDto } from '../types/data-contracts';
+import type { IUserDto } from '../types/data-contracts';
 
 export const getAllUsers = async ({
   onSuccess,
@@ -9,11 +9,11 @@ export const getAllUsers = async ({
   onError: (error: AxiosError) => void;
 }) => {
   try {
-    const { data } = await axios.get<GetAllUsersResponse>(
-      'https://dummyjson.com/users?limit=999'
+    const { data } = await axios.get<IUserDto[]>(
+      `${import.meta.env.VITE_API_URL}/users`
     );
 
-    onSuccess(data.users);
+    onSuccess(data);
   } catch (err) {
     onError(err as AxiosError);
   }

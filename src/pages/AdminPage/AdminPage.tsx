@@ -18,8 +18,11 @@ import type {
 import type { IUserDto } from '../../types/data-contracts';
 import { getAllUsers } from '../../services/getAllUsers.query';
 import { useAuthContext } from '../../providers/AuthProvider/hooks';
+import { updateUser } from '../../services/updateUser.mutation';
+import { useNavigate } from 'react-router-dom';
 
 const AdminPage = () => {
+  const navigate = useNavigate();
   const { user } = useAuthContext();
   const [users, setUsers] = useState<IUserDto[]>([]);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
@@ -39,9 +42,18 @@ const AdminPage = () => {
 
   const processRowUpdate = (newRow: GridRowModel) => {
     const updatedRow = { ...newRow } as IUserDto;
-    setUsers((prev) =>
-      prev.map((user) => (user.id === updatedRow.id ? updatedRow : user))
-    );
+
+    updateUser({
+      id: updatedRow.id,
+      dto: updatedRow,
+      onError: (err) => console.log(err.message),
+      onSuccess: (updatedUser) => {
+        setUsers((prev) =>
+          prev.map((user) => (user.id === updatedUser.id ? updatedUser : user))
+        );
+      },
+    });
+
     return updatedRow;
   };
 
@@ -51,7 +63,10 @@ const AdminPage = () => {
       headerName: 'Avatar',
       width: 80,
       renderCell: (params: GridRenderCellParams<GridValidRowModel>) => (
-        <Avatar src={params?.value} />
+        <Avatar
+          src={params?.value}
+          onClick={() => navigate(`/users/${params.row.id}`)}
+        />
       ),
       sortable: false,
       filterable: false,

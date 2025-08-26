@@ -1,25 +1,19 @@
 import { AxiosError } from 'axios';
 import type { IUserDto } from '../types/data-contracts';
 import axios from 'axios';
-import { LocalStorageKeys } from '../enum/LocalStorageKeys';
 
-export const getCurrentUser = async ({
+export const getUserById = async ({
+  id,
   onSuccess,
   onError,
 }: {
+  id: string;
   onSuccess: (user: IUserDto) => void;
   onError: (error: AxiosError) => void;
 }) => {
   try {
-    const currentUserId = localStorage.getItem(LocalStorageKeys.CurrentUserId);
-
-    if (!currentUserId) {
-      onError(new AxiosError('Session expired'));
-      return;
-    }
-
     const { data } = await axios.get<IUserDto>(
-      `${import.meta.env.VITE_API_URL}/users/${currentUserId}`
+      `${import.meta.env.VITE_API_URL}/users/${id}`
     );
 
     onSuccess(data);

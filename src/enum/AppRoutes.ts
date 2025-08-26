@@ -5,5 +5,6 @@ export enum AppRoutes {
   Login = '/login',
   Profile = '/profile',
   CreatePost = '/posts/create',
-  Admin = 'admin',
+  Admin = '/admin',
+  Users = '/users/:id',
 }

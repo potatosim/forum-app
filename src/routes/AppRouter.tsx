@@ -13,6 +13,7 @@ import { useAuthContext } from '../providers/AuthProvider/hooks';
 import ProfilePage from '../pages/ProfilePage';
 import CreatePostPage from '../pages/CreatePostPage';
 import AdminPage from '../pages/AdminPage';
+import UserPage from '../pages/UserPage';
 
 const AuthRequired = () => {
   const navigate = useNavigate();
@@ -51,6 +52,7 @@ const AppRouter = () => {
             <Route path={AppRoutes.Profile} element={<ProfilePage />} />
             <Route path={AppRoutes.CreatePost} element={<CreatePostPage />} />
             <Route path={AppRoutes.Admin} element={<AdminPage />} />
+            <Route path={AppRoutes.Users} element={<UserPage />} />
           </Route>
         </Route>
       </Route>

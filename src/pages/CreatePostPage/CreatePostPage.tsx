@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { useAuthContext } from '../../providers/AuthProvider/hooks';
 import { useNavigate } from 'react-router-dom';
-import { AppRoutes } from '../../enum/AppRoutes';
-import { updatePosts } from '../../helpers/storage';
 import {
   Box,
   Button,
@@ -13,6 +11,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { createPost } from '../../services/createPost.mutation';
 
 const CreatePostPage = () => {
   const { user } = useAuthContext();
@@ -22,19 +21,20 @@ const CreatePostPage = () => {
 
   const handleCreatePost = () => {
     if (user) {
-      updatePosts({
-        body,
-        isFavorite: false,
-        views: 0,
-        title,
-        userId: user.id,
-        reaction: null,
-        reactions: { dislikes: 0, likes: 0 },
-        tags: [],
-        id: new Date().getTime(),
-      });
+      createPost(
+        {
+          body,
+          title,
+          userId: user.id,
+        },
+        {
+          onSuccess: (post) => {
+            navigate(`/post/${post.id}`);
+          },
+          onError: (err) => console.log(err.message),
+        }
+      );
     }
-    navigate(AppRoutes.Home);
   };
 
   return (

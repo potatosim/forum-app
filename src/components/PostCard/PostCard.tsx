@@ -9,18 +9,20 @@ import {
 } from '@mui/material';
 import PostCardActions from './PostCardActions';
 import { useAuthContext } from '../../providers/AuthProvider/hooks';
-import type { IPostWithAdditionalData } from '../../types/data-contracts';
+import type { IPostDto } from '../../types/data-contracts';
 import { Delete } from '@mui/icons-material';
 import type { MouseEventHandler } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface PostCardProps {
-  post: IPostWithAdditionalData;
-  onPostClick?: (post: IPostWithAdditionalData) => void;
-  onPostDelete?: (post: IPostWithAdditionalData) => void;
+  post: IPostDto;
+  onPostClick?: (post: IPostDto) => void;
+  onPostDelete?: (post: IPostDto) => void;
 }
 
 const PostCard = ({ post, onPostDelete, onPostClick }: PostCardProps) => {
-  const { title, body, userId, id, isFavorite, reactions, reaction } = post;
+  const navigate = useNavigate();
+  const { title, body, username, userId } = post;
   const { user } = useAuthContext();
 
   const handleDeletePost: MouseEventHandler = (event) => {
@@ -31,6 +33,11 @@ const PostCard = ({ post, onPostDelete, onPostClick }: PostCardProps) => {
   const handlePostClick: MouseEventHandler = (event) => {
     event.stopPropagation();
     onPostClick?.(post);
+  };
+
+  const handleAvatarClick: MouseEventHandler = (event) => {
+    event.stopPropagation();
+    navigate(`/users/${userId}`);
   };
 
   return (
@@ -44,13 +51,16 @@ const PostCard = ({ post, onPostDelete, onPostClick }: PostCardProps) => {
       <CardHeader
         title={title}
         avatar={
-          <Avatar sx={{ bgcolor: '#30c3e7' }} aria-label="user">
-            {userId}
+          <Avatar
+            sx={{ bgcolor: '#30c3e7' }}
+            aria-label="user"
+            onClick={handleAvatarClick}>
+            {username[0].toUpperCase()}
           </Avatar>
         }
         action={
           user &&
-          user.role === 'admin' && (
+          (user.role === 'admin' || user.id === post.userId) && (
             <Tooltip title="Delete post">
               <IconButton onClick={handleDeletePost}>
                 <Delete />
@@ -62,12 +72,7 @@ const PostCard = ({ post, onPostDelete, onPostClick }: PostCardProps) => {
       <CardContent>
         <Typography>{body}</Typography>
       </CardContent>
-      <PostCardActions
-        reactions={reactions}
-        isFavorite={isFavorite}
-        id={id}
-        reaction={reaction}
-      />
+      <PostCardActions id={post.id} />
     </Card>
   );
 };

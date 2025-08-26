@@ -1,23 +1,30 @@
 import { Send } from '@mui/icons-material';
 import { Box, IconButton, TextareaAutosize, Tooltip } from '@mui/material';
 import { useState } from 'react';
-import { updateComments } from '../../helpers/storage';
-import type { ICommentDto, IUserDto } from '../../types/data-contracts';
+import type { ICommentDto } from '../../types/data-contracts';
 import { useAuthContext } from '../../providers/AuthProvider/hooks';
 
 const CommentTextArea = ({
   postId,
   onSubmit,
 }: {
-  postId: number;
-  onSubmit: (comment: ICommentDto) => void;
+  postId: string;
+  onSubmit: (comment: Omit<ICommentDto, 'id' | 'likes'>) => void;
 }) => {
   const { user } = useAuthContext();
 
   const [text, setText] = useState('');
 
   const handleComment = () => {
-    const comment = updateComments(text, postId, Date.now(), user as IUserDto);
+    const comment: Omit<ICommentDto, 'id' | 'likes'> = {
+      body: text,
+      postId,
+      user: {
+        id: user?.id as string,
+        fullName: `${user?.firstName} ${user?.lastName}`,
+        username: user?.username as string,
+      },
+    };
     onSubmit(comment);
     setText('');
   };

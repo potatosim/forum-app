@@ -1,59 +1,37 @@
-export interface GetAllResponse {
-  skip: number;
-  total: number;
-  limit: number;
-}
-
 export interface IPostDto {
-  id: number;
+  id: string;
   title: string;
   body: string;
-  tags: string[];
-  reactions: {
-    likes: number;
-    dislikes: number;
-  };
-  views: number;
-  userId: number;
+  userId: string;
+  username: string;
 }
 
 export interface ICommentDto {
-  id: number;
+  id: string;
   body: string;
-  postId: number;
-  likes: number;
+  postId: string;
   user: {
-    id: number;
+    id: string;
     username: string;
     fullName: string;
   };
 }
 
-export interface GetAllPostsResponse extends GetAllResponse {
-  posts: IPostDto[];
-}
-
-export interface GetAllUsersResponse extends GetAllResponse {
-  users: IUserDto[];
-}
-
-export interface GetAllCommentsResponse extends GetAllResponse {
-  comments: ICommentDto[];
-}
-
-export interface IPostWithAdditionalData extends IPostDto {
-  isFavorite: boolean;
-  reaction: 'like' | 'dislike' | null;
+export interface IGetPaginationPosts {
+  data: IPostDto[];
+  pages: number;
 }
 
 export interface IUserDto {
-  id: number;
+  id: string;
   firstName: string;
   lastName: string;
   role: 'admin' | 'user';
   image: string;
   email: string;
   birthDate: string;
+  username: string;
+  password: string;
   address: {
     address: string;
     city: string;
@@ -62,30 +40,12 @@ export interface IUserDto {
     postalCode: string;
     country: string;
   };
+  favoritePosts: string[];
+  postReactions: Record<string, 'like' | 'dislike' | null>;
 }
 
 export interface ILoginUserDto {
   username: string;
   password: string;
   expiresInMins?: number;
-}
-
-export interface ILoginUserResponse {
-  id: number;
-  username: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  gender: string;
-  image: string;
-  accessToken: string;
-  refreshToken: string;
-}
-export interface ILocalStorageReactions {
-  [userId: string]: {
-    [postId: string]: {
-      reaction: 'like' | 'dislike' | null;
-      isFavorite: boolean;
-    };
-  };
 }

@@ -5,64 +5,92 @@ import {
   ThumbUp,
 } from '@mui/icons-material';
 import { Box, CardActions, IconButton, Tooltip } from '@mui/material';
-import { useState, type MouseEventHandler } from 'react';
-import { changeFavorites, changeReaction } from '../../helpers/storage';
-import type { IPostWithAdditionalData } from '../../types/data-contracts';
+import { type MouseEventHandler } from 'react';
 import { useAuthContext } from '../../providers/AuthProvider/hooks';
+import { changeReactions } from '../../services/changeReactions.mutation';
+import { changeFavorites } from '../../services/changeFavorites.mutation';
 
-const PostCardActions = ({
-  isFavorite,
-  id,
-  reactions,
-  reaction,
-}: Pick<
-  IPostWithAdditionalData,
-  'id' | 'isFavorite' | 'reaction' | 'reactions'
->) => {
-  const { user } = useAuthContext();
-  const [isPostFavorite, setIsPostFavorite] = useState(isFavorite);
-  const [currentUserReaction, setCurrentUserReaction] = useState(reaction);
+interface IPostCardActions {
+  id: string;
+}
+
+const PostCardActions = ({ id }: IPostCardActions) => {
+  const { user, setUser } = useAuthContext();
+  const isFavorite = (user?.favoritePosts ?? []).includes(id);
+  const reaction = user?.postReactions?.[id] ?? null;
 
   const addToFavorites: MouseEventHandler = (event) => {
     event.stopPropagation();
-    changeFavorites(id, user?.id as number, true);
 
-    setIsPostFavorite(true);
+    if (user) {
+      changeFavorites({
+        user,
+        postId: id,
+        onError: (err) => console.log(err.message),
+        type: 'add',
+        onSuccess: (updatedUser) => setUser(updatedUser),
+      });
+    }
   };
 
   const removeFromFavs: MouseEventHandler = (event) => {
     event.stopPropagation();
 
-    changeFavorites(id, user?.id as number, false);
-
-    setIsPostFavorite(false);
+    if (user) {
+      changeFavorites({
+        user,
+        postId: id,
+        onError: (err) => console.log(err.message),
+        type: 'remove',
+        onSuccess: (updatedUser) => setUser(updatedUser),
+      });
+    }
   };
 
   const likePost: MouseEventHandler = (event) => {
     event.stopPropagation();
 
-    const updatedReaction =
-      currentUserReaction && currentUserReaction === 'like' ? null : 'like';
+    if (user) {
+      const updatedReaction = reaction && reaction === 'like' ? null : 'like';
 
-    changeReaction(id, user?.id as number, updatedReaction);
-    setCurrentUserReaction(updatedReaction);
+      changeReactions({
+        user,
+        postId: id,
+        reaction: updatedReaction,
+        onSuccess: (updatedUser) => {
+          setUser(updatedUser);
+        },
+        onError: (err) => {
+          console.log(err.message);
+        },
+      });
+    }
   };
 
   const disLikePost: MouseEventHandler = (event) => {
     event.stopPropagation();
 
-    const updatedReaction =
-      currentUserReaction && currentUserReaction === 'dislike'
-        ? null
-        : 'dislike';
+    if (user) {
+      const updatedReaction =
+        reaction && reaction === 'dislike' ? null : 'dislike';
 
-    changeReaction(id, user?.id as number, updatedReaction);
-    setCurrentUserReaction(updatedReaction);
+      changeReactions({
+        user,
+        postId: id,
+        reaction: updatedReaction,
+        onSuccess: (updatedUser) => {
+          setUser(updatedUser);
+        },
+        onError: (err) => {
+          console.log(err.message);
+        },
+      });
+    }
   };
 
   return (
     <CardActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
-      {isPostFavorite ? (
+      {isFavorite ? (
         <Tooltip title="Remove from favorites">
           <IconButton
             onClick={removeFromFavs}
@@ -78,28 +106,14 @@ const PostCardActions = ({
         </Tooltip>
       )}
       <Box>
-        <Tooltip
-          title={`${
-            currentUserReaction === 'like'
-              ? (reactions?.likes || 0) + 1
-              : reactions?.likes
-          } people like this post`}>
+        <Tooltip title="Like post">
           <IconButton onClick={likePost} aria-label="like post">
-            <ThumbUp
-              color={currentUserReaction === 'like' ? 'action' : 'disabled'}
-            />
+            <ThumbUp color={reaction === 'like' ? 'action' : 'disabled'} />
           </IconButton>
         </Tooltip>
-        <Tooltip
-          title={`${
-            currentUserReaction === 'dislike'
-              ? (reactions?.dislikes || 0) + 1
-              : reactions?.dislikes
-          } people dislike this post`}>
+        <Tooltip title="Dislike post">
           <IconButton onClick={disLikePost} aria-label="dislike post">
-            <ThumbDown
-              color={currentUserReaction === 'dislike' ? 'action' : 'disabled'}
-            />
+            <ThumbDown color={reaction === 'dislike' ? 'action' : 'disabled'} />
           </IconButton>
         </Tooltip>
       </Box>

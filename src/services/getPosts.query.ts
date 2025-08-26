@@ -1,20 +1,30 @@
 import axios, { AxiosError } from 'axios';
-import type { GetAllPostsResponse } from '../types/data-contracts';
+import type { IGetPaginationPosts } from '../types/data-contracts';
 
 export const getPosts = async ({
+  page,
   onSuccess,
+  userId,
   onError,
 }: {
-  onSuccess: (posts: GetAllPostsResponse) => void;
+  page: number;
+  userId?: string | null;
+  onSuccess: (posts: IGetPaginationPosts) => void;
   onError: (error: AxiosError) => void;
 }) => {
   try {
-    const { data } = await axios.get<GetAllPostsResponse>(
-      `https://dummyjson.com/posts?limit=999`
+    const { data } = await axios.get<IGetPaginationPosts>(
+      `${import.meta.env.VITE_API_URL}/posts`,
+      {
+        params: {
+          _page: page,
+          userId,
+        },
+      }
     );
 
     onSuccess(data);
-    return data.posts;
+    return data;
   } catch (err) {
     onError(err as AxiosError);
   }

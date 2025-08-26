@@ -1,47 +1,47 @@
-import { Alert, Box, Button, Paper } from '@mui/material';
-import { useEffect, useMemo, useState } from 'react';
+import { Alert, Box, Button, Pagination, Paper } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
 import PostCard from '../../components/PostCard';
-import type { IPostWithAdditionalData } from '../../types/data-contracts';
-import { getPostsWithAdditionalData } from '../../helpers/getPostsWithAdditionalData';
+import type { IPostDto } from '../../types/data-contracts';
 import { getPosts } from '../../services/getPosts.query';
-import { useAuthContext } from '../../providers/AuthProvider/hooks';
 import UsersFilter from '../../components/UsersFilter';
-import { updateDeletedPosts } from '../../helpers/storage';
 import { useNavigate } from 'react-router-dom';
 import { AppRoutes } from '../../enum/AppRoutes';
+import { deletePost } from '../../services/deletePost.mutation';
 
 const MainPage = () => {
   const navigate = useNavigate();
-  const { user } = useAuthContext();
-  const [posts, setPosts] = useState<IPostWithAdditionalData[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [posts, setPosts] = useState<IPostDto[]>([]);
   const [error, setError] = useState('');
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchPosts = useCallback(() => {
     getPosts({
-      onSuccess: ({ posts }) => {
-        setPosts(getPostsWithAdditionalData(posts, user));
+      page: currentPage,
+      userId: selectedUserId,
+      onSuccess: ({ data, pages }) => {
+        setPosts(data);
+        setTotalPages(pages);
       },
       onError: (error) => {
         setError(error.message);
       },
     });
-  }, []);
+  }, [currentPage, selectedUserId]);
 
-  const postsToRender = useMemo(() => {
-    if (!selectedUserId) {
-      return posts;
-    }
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
 
-    return posts.filter((post) => post.userId === selectedUserId);
-  }, [selectedUserId, posts]);
-
-  const handleDeletePost = (deletedPost: IPostWithAdditionalData) => {
-    setPosts((prev) => prev.filter((post) => post.id !== deletedPost.id));
-    updateDeletedPosts(deletedPost.id);
+  const handleDeletePost = (deletedPost: IPostDto) => {
+    deletePost(deletedPost.id, {
+      onSuccess: () => fetchPosts(),
+      onError: (error) => setError(error.message),
+    });
   };
 
-  const handlePostClick = (post: IPostWithAdditionalData) => {
+  const handlePostClick = (post: IPostDto) => {
     navigate(AppRoutes.Post.replace(':id', `${post.id}`));
   };
 
@@ -59,7 +59,7 @@ const MainPage = () => {
         flexDirection: 'column',
         gap: '1.5rem',
         justifyContent: 'flex-start',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         padding: '1.5rem',
       }}>
       <Box
@@ -76,7 +76,14 @@ const MainPage = () => {
           Add new post
         </Button>
       </Box>
-      {postsToRender.map((post) => (
+      {totalPages > 1 && (
+        <Pagination
+          count={totalPages}
+          page={currentPage}
+          onChange={(_, page) => setCurrentPage(page)}
+        />
+      )}
+      {posts.map((post) => (
         <PostCard
           key={`${post.id}${post.title}`}
           post={post}

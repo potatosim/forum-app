@@ -3,45 +3,28 @@ import PostCard from '../../components/PostCard';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Comment from '../../components/Comment';
-import type {
-  ICommentDto,
-  IPostWithAdditionalData,
-} from '../../types/data-contracts';
+import type { ICommentDto, IPostDto } from '../../types/data-contracts';
 import CommentTextArea from '../../components/Comment/CommentTextArea';
-import { getPostWithAdditionalData } from '../../helpers/getPostsWithAdditionalData';
-import {
-  getCommentsByPostIdFromStorage,
-  getCreatedPostFromStorage,
-  updateDeletedPosts,
-} from '../../helpers/storage';
 import { getPost } from '../../services/getPost.query';
 import { getCommentsByPostId } from '../../services/getCommentsByPostId.query';
-import { useAuthContext } from '../../providers/AuthProvider/hooks';
 import { AppRoutes } from '../../enum/AppRoutes';
+import { deletePost } from '../../services/deletePost.mutation';
+import { createComment } from '../../services/createComment.mutation';
 
 const PostPage = () => {
   const navigate = useNavigate();
-  const { user } = useAuthContext();
   const { id } = useParams();
-  const [post, setPost] = useState<IPostWithAdditionalData | null>(null);
+  const [post, setPost] = useState<IPostDto | null>(null);
   const [comments, setComments] = useState<ICommentDto[]>([]);
   const [postsError, setPostsError] = useState('');
   const [commentsError, setCommentsError] = useState('');
 
   useEffect(() => {
     if (id) {
-      const postFromStorage = getCreatedPostFromStorage(+id);
-
-      if (postFromStorage) {
-        setPost(postFromStorage);
-        setComments(getCommentsByPostIdFromStorage(postFromStorage.id));
-        return;
-      }
-
       getPost({
         id,
         onSuccess: (post) => {
-          setPost(getPostWithAdditionalData(post, user));
+          setPost(post);
         },
         onError: (error) => {
           setPostsError(error.message);
@@ -60,13 +43,18 @@ const PostPage = () => {
     }
   }, []);
 
-  const handlePostDelete = (deletedPost: IPostWithAdditionalData) => {
-    updateDeletedPosts(deletedPost.id);
-    navigate(AppRoutes.Home);
+  const handlePostDelete = (deletedPost: IPostDto) => {
+    deletePost(deletedPost.id, {
+      onSuccess: () => navigate(AppRoutes.Home),
+      onError: (err) => console.log(err.message),
+    });
   };
 
-  const handleAddComment = (comment: ICommentDto) => {
-    setComments((prev) => [...prev, comment]);
+  const handleAddComment = (comment: Omit<ICommentDto, 'id' | 'likes'>) => {
+    createComment(comment, {
+      onSuccess: (newComment) => setComments((prev) => [...prev, newComment]),
+      onError: (err) => console.log(err.message),
+    });
   };
 
   return (
