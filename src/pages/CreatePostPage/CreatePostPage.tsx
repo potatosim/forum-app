@@ -26,6 +26,7 @@ const CreatePostPage = () => {
           body,
           title,
           userId: user.id,
+          username: user.username,
         },
         {
           onSuccess: (post) => {

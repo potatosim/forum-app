@@ -4,7 +4,7 @@ import type { ServiceHandler } from './type';
 import axios from 'axios';
 
 export const createPost = async (
-  body: Pick<IPostDto, 'title' | 'body' | 'userId'>,
+  body: Pick<IPostDto, 'title' | 'body' | 'userId' | 'username'>,
   { onError, onSuccess }: ServiceHandler<IPostDto>
 ) => {
   try {
